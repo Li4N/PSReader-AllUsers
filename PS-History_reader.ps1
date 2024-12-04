@@ -1,3 +1,17 @@
+param (
+    [Parameter(Mandatory = $true)]
+    [bool]$typeOutput
+)
+
+if ($PSBoundParameters.Count -eq 0) {
+    Write-Host "Uso del script:" -ForegroundColor Yellow
+    Write-Host "  Ejecuta este script con el parámetro obligatorio --typeOutput para controlar el tipo de salida."
+    Write-Host "  Ejemplo:"
+    Write-Host "    & '.\PS-History_reader.ps1' -typeOutput $true"
+    Write-Host "    & '.\PS-History_reader.ps1' -typeOutput $false"
+    Exit
+}
+
 $usersPath = "C:\Users"
 $users = Get-ChildItem -Path $usersPath -Directory
 $relativePath = "\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine"
@@ -15,9 +29,11 @@ foreach ($user in $users) {
                 TamañoKB  = [math]::Round($file.Length / 1KB, 2)
                 FechaMod  = $file.LastWriteTime
             }
-            Write-Host "Contenido del archivo: $($file.FullName)" -ForegroundColor Cyan
-            Get-Content -Path $file.FullName | ForEach-Object { Write-Host $_ }
-            Write-Host "--------------------------------------------`n"
+            if ($typeOutput) {
+                Write-Host "Contenido del archivo: $($file.FullName)" -ForegroundColor Cyan
+                Get-Content -Path $file.FullName | ForEach-Object { Write-Host $_ }
+                Write-Host "--------------------------------------------`n"
+            }
         }
     }
 }
